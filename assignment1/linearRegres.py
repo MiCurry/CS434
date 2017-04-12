@@ -1,5 +1,7 @@
 import os.path as path
 import sys
+import argparse
+
 from numpy import arange, array, ones, linalg
 import numpy
 import re
@@ -61,6 +63,16 @@ def SSE(w, data, dummy=0):
 
 # Prevent running if imported as a module
 if __name__ == "__main__":
+    """ Argument Parser """
+    parser = argparse.ArgumentParser(description='Homework Solution.')
+    parser.add_argument("-v", '--verbose',
+                        help='produces verbose output',
+                        action='store_true')
+    args = parser.parse_args()
+    if args.verbose:
+        verbose = 1
+
+    """ Solution Start """
     if path.isfile(testData) and path.isfile(trainData):
         TRAIN = load_data(trainData, dummy=1)
         TEST = load_data(testData, dummy=1)
@@ -68,8 +80,5 @@ if __name__ == "__main__":
         print "Traning or Test File Not found!"
         sys.quit(0)
 
-    print "Optimal weight vector w= "
-    w = train(TRAIN)
-    print w
-    sse = SSE(w, TEST)
-    print "SSE = ", sse
+    print "Optimal weight vector w= "; w = train(TRAIN); print w
+    sse = SSE(w, TEST); print "SSE = ", sse
