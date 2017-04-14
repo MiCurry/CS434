@@ -21,7 +21,7 @@ file - the file to load the from
 dummy - the number of dummy variables to be added to the w vector
 random - the number of random variables to add to our training data
 """
-def load_data(file, dummy=0, random=0):
+def load_data(file, dummy=0, random=0, a=0):
     f = open(file, 'r')
     X = []
     Y = []
@@ -35,24 +35,37 @@ def load_data(file, dummy=0, random=0):
         X.append(line[1:13])
         Y.append(line[13])  # Desired output
 
+    # Add dummy variable columns
     if(dummy > 0):
         for i in range(len(X)):
             for k in range(dummy):
                 X[i].insert(k, 1)
-
+                
+    # Add randomly generated data features
     if(random > 0):
-        pass
-
+        for i in range(len(X)):
+            for k in range(random):
+                dist = float(a+k)/len(X)
+                X[i].insert(k, dist*(i+1))
+                
     return X, Y # Returns a tuple. [0] = X_i values [1] = X_2 values
+
 
 """
 Computes the optimal weight vector w.
 data - the data we wish to get a w weight vector for
 """
-def train(data):
+def train(data, l=0):
     X = array(data[0])
     Y = array(data[1])
-    return numpy.dot(linalg.inv(numpy.dot(X.T, X)), numpy.dot(X.T, Y))
+    
+    if (l > 0):
+        I = numpy.identity(12)
+        return numpy.dot(linalg.inv(numpy.add(numpy.dot(X.T, X), l*I)), numpy.dot(X.T, Y))
+
+    else:
+        return numpy.dot(linalg.inv(numpy.dot(X.T, X)), numpy.dot(X.T, Y))
+
 
 """
 Test the optimal weights vector against the testing data
@@ -71,8 +84,9 @@ def SSE(w, data):
         if(verbose > 0):
             print "Estimated: {0} Actual: {1}".format(estimate, Y[i])
         i += 1
-
+    
     return sse
+
 
 # Prevent running if imported as a module
 if __name__ == "__main__":
@@ -92,32 +106,46 @@ if __name__ == "__main__":
     if path.isfile(testData) and path.isfile(trainData):
         pass
     else:
-        print "Traning or Test File Not found!"
+        print "Training or Test File Not found!"
         sys.quit(0)
 
 
     """ Dummy = 1 - No random variables added """
-    print "\n Dummy = 1 - No random Variables"
-    TRAIN = load_data(trainData, dummy=1)
-    TEST = load_data(testData, dummy=1)
-    print "Optimal weight vector w:"; w = train(TRAIN); print w
-    training_sse = SSE(w, TRAIN)
-    testing_sse = SSE(w, TEST)
-    print "Traning SSE = {0} \t Testing SSE = {1}\n".format(training_sse,
-                                                          testing_sse)
+   # print "\n Dummy = 1 - No random Variables"
+   # TRAIN = load_data(trainData, dummy=1, random=0)
+   # TEST = load_data(testData, dummy=1, random=0)
+   # print "Optimal weight vector w:"; w = train(TRAIN); print w
+   # training_sse = SSE(w, TRAIN)
+   # testing_sse = SSE(w, TEST)
+   # print "Traning SSE = {0} \t Testing SSE = {1}\n".format(training_sse,
+   #                                                       testing_sse)
 
     """ Dummy = 0 - No random variables added """
-    print "\nDummy = 0 - No random Variables"
-    TRAIN = load_data(trainData, dummy=0)
-    TEST = load_data(testData, dummy=0)
-    print "Optimal weight vector w: "; w = train(TRAIN); print w
-    training_sse = SSE(w, TRAIN)
-    testing_sse = SSE(w, TEST)
-    print "Traning SSE = {0} \t Testing SSE = {1}\n".format(training_sse,
-                                                          testing_sse)
+   # print "\nDummy = 0 - No random Variables"
+   # TRAIN = load_data(trainData, dummy=0, random=0)
+   # TEST = load_data(testData, dummy=0, random=0)
+   # print "Optimal weight vector w: "; w = train(TRAIN); print w
+   # training_sse = SSE(w, TRAIN)
+   # testing_sse = SSE(w, TEST)
+   # print "Traning SSE = {0} \t Testing SSE = {1}\n".format(training_sse,
+   #                                                       testing_sse)
                                                           
-    # TODO: Random Variables added
+    """ Dummy = 0 - 5 random variables added """
+   # print "\n6 Additional Random Features"
+   # TRAIN = load_data(trainData, dummy=0, random=6, a=6)
+   # TEST = load_data(testData, dummy=0, random=6, a=6)
+   # print "Optimal weight vector w: "; w = train(TRAIN); print w
+   # training_sse = SSE(w, TRAIN)
+   # testing_sse = SSE(w, TEST)
+   # print "Traning SSE = {0} \t Testing SSE = {1}\n".format(training_sse,
+   #                                                       testing_sse)
 
-    # TODO: Variant of linear regression
-
-    # TODO: Regulation Terms
+    """ Variant of Linear Regression: Introduce lambda*I """
+   # print "\nVariant of Linear Regression: lambda=100"
+   # TRAIN = load_data(trainData, dummy=0, random=0)
+   # TEST = load_data(testData, dummy=0, random=0)
+   # print "Optimal weight vector w: "; w = train(TRAIN, l=100); print w
+   # training_sse = SSE(w, TRAIN)
+   # testing_sse = SSE(w, TEST)
+   # print "Traning SSE = {0} \t Testing SSE = {1}\n".format(training_sse,
+   #                                                       testing_sse)
