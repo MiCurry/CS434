@@ -57,58 +57,63 @@ class solution():
                 x = train_data[0][i]; y = train_data[1][i]
 
                 # Calculate our guess for y
-                dot_prod = np.dot(-w, x)
-                y_hat = 1 / ( 1 + np.e * np.exp(dot_prod))
+                dot_prod = np.dot(-w.T, x)
+                y_hat = 1 / (1 + np.exp(dot_prod))
 
                 # Find Error and computer d
                 error = y - y_hat
                 d = d + error * x
 
             # Update our W based on the learning rate
-            w = w + (learning_rate * d)
+            #w = w + (learning_rate * d)
+            w = np.add(w, np.dot(learning_rate, d))
 
         return w
 
     def test(self, w, test_data):
-        error = 0
+        loss = 0
         for i in range(test_data[0].shape[0]):
             # Grab X and Y
             x = test_data[0][i]; y = test_data[1][i]
 
-            dot_prod = np.dot(-w, x)
-            y_hat = 1 / ( 1 + np.e * np.exp(dot_prod))
+            dot_prod = np.dot((-w.T), x)
+            y_hat = 1 / ( 1 + (np.exp(dot_prod)))
 
-            if verbose > 1:
-                print "E: {0} A: {1}\t".format(y_hat, y),
+            print "E: {0} A: {1}\t".format(y_hat, y),
 
-            # Find Error and computer d
-            error += np.subtract(y, y_hat)**2
+            if y == 1:
+                loss += -np.log(y_hat)
+            elif y == 0:
+                loss += -np.log(1 - y_hat)
+            else:
+                print "Error: Should not have gotten here!"
 
-        return error
+        return loss
+
+def frange(x, y, jump):
+    while x < y:
+        yield x
+        x += jump
+
 if __name__ == "__main__":
     """ Argument Parser """
     # Pass -v to add verbose output
     parser = argparse.ArgumentParser(description='Homework Solution.')
     parser.add_argument("-v", '--verbose',
-                        help='produces verbose output',
-                        action='store_true')
+                        help='produces verbose output')
     args = parser.parse_args()
-    if args.verbose:
-        verbose = 1
+    if args.verbose > 0:
+        verbose = args.verbose
+        print verbose
 
     """ Solution Start """
     sol = solution(trainData, testData)
     train_data = sol.load_data(trainData)
     test_data = sol.load_data(testData)
 
-    w = sol.train(train_data, 1, 1)
-
-    if verbose > 3:
-        for i in range(30):
-            print "i = {0} SSE: {1}".format(i, \
-            sol.test(sol.train(train_data,1,i), test_data))
-
     if verbose > 0:
-        for i in range(15, 45):
-            print "i = {0} SSE: {1}".format(i, \
-            sol.test(sol.train(train_data,1,i), test_data))
+        for i in frange(-2, 2, 0.5):
+            print "i = {0} Loss: {1}".format(i, \
+            sol.test(sol.train(train_data,10,25), test_data))
+
+    w = sol.train(train_data, i, 3)
