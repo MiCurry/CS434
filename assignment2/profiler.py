@@ -93,6 +93,33 @@ class solution():
         w = w + (learning_rate * d)
         return w
 
+    def lambtrain(self, train_data, learning_rate, iterations, l):
+        # Create W and D
+        w = zeros(256)
+        while(iterations > 0):
+
+            d = zeros(256)
+            for i in range(train_data[0].shape[0]):
+                # Grab X and Y
+                x = train_data[0][i]; y = train_data[1][i]
+
+                # Calculate our guess for y
+                dot_prod = np.dot(-w.T, x)
+                denominator = np.longdouble(1 + np.exp(dot_prod))
+                y_hat = np.longdouble(1/denominator)
+                y_hat + 1/2* l * np.linalg.norm(w, 2)
+                if y_hat >= .5:
+                        y_hat = 1
+                # Find Error and computer d
+                error = y - y_hat
+                d = d + (error * x)
+
+            # Update our W based on the learning rate
+            w = w + (learning_rate * d)
+            iterations -= 1
+
+        return w
+
     def test(self, w, test_data):
         accuracy = 0
         for i in range(test_data[0].shape[0]):
@@ -139,6 +166,8 @@ if __name__ == "__main__":
                 train_acc.append(train_per)
 
 
+            plt.cla()
+            plt.clf()
             plt.subplot(211)
             plt.title("Testing Accuracy Over Time")
             plt.ylabel("Percent Correct")
@@ -152,25 +181,26 @@ if __name__ == "__main__":
             plt.savefig("./docs/training_accuracy")
 
     if verbose > 0:
+        test_acc = []; train_acc = []
         w = zeros(256)
-        for lambdas in [-1000, -100, -10, 0, 10, 100, 1000]:
-                w = sol.train(w, train_data, .0011, 170, lambdas)
+        for lambdas in [-1000, -100, -10, 1, 10, 100, 1000]:
+                w = sol.train(w, train_data, .0011, 85, lambdas)
                 test_per = sol.test(w, test_data)
                 train_per = sol.test(w, train_data)
                 test_acc.append(train_per)
                 train_acc.append(train_per)
-                print test_per, train_per
-
-
+                
+        plt.cla()
+        plt.clf()
         plt.subplot(211)
         plt.title("Testing Accuracy vs Lamda Values")
         plt.ylabel("Percent Correct")
-        plt.plot(test_acc, "b")
+        plt.plot([-1000, -100, -10, 1, 10, 100, 1000], test_acc, "r")
 
         plt.subplot(212)
         plt.title("Training Accuracy Over Time")
-        plt.xlabel("Number of Iterations")
+        plt.xlabel("Lambda")
         plt.ylabel("Percent Correct")
-        plt.plot(train_acc, "r")
+        plt.plot([-1000, -100, -10, 1, 10, 100, 1000], train_acc, "b")
         plt.savefig("./docs/lambda_accuracy.png")
 

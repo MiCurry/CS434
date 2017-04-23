@@ -132,8 +132,7 @@ if __name__ == "__main__":
     if verbose > 0:
         min = 1000
         min_learning_rate = 0
-        for i in frange(0, .0001, .0001):
-
+        for i in frange(0, .0015, .0001):
             loss = sol.test(sol.train(train_data,i,82), test_data)
             if loss <= min:
                 min = loss
