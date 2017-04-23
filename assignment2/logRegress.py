@@ -60,8 +60,8 @@ class solution():
             
                 # Calculate our guess for y
                 dot_prod = np.dot(-w.T, x)
-                denominator = (1 + np.exp(dot_prod))
-                y_hat = 1/denominator
+                denominator = np.longdouble(1 + np.exp(dot_prod))
+                y_hat = np.longdouble(1/denominator)
                 
                 # Find Error and computer d
                 error = y - y_hat
