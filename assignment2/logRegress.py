@@ -17,6 +17,11 @@ FOUR = 0
 NINE = 1
 np.seterr(over='ignore')
 
+def frange(x, y, jump):
+    while x < y:
+        yield x
+        x += jump
+
 class solution():
     def __init__(self, train_file, test_file):
         # Check for files
@@ -73,7 +78,8 @@ class solution():
                 dot_prod = np.dot(-w.T, x)
                 denominator = np.longdouble(1 + np.exp(dot_prod))
                 y_hat = np.longdouble(1/denominator)
-
+                if y_hat >= .5:
+                        y_hat = 1
                 # Find Error and computer d
                 error = y - y_hat
                 d = d + (error * x)
@@ -88,25 +94,17 @@ class solution():
         loss = 0
         for i in range(test_data[0].shape[0]):
             # Grab X and Y
-            x = train_data[0][i]; y = train_data[1][i]
+            x = test_data[0][i]; y = test_data[1][i]
 
             # Calculate our guess for y
             dot_prod = np.dot(-w.T, x)
             denominator = np.longdouble(1 + np.exp(dot_prod))
             y_hat = np.longdouble(1/denominator)
-
+            
             # Calculate loss
             loss += np.longdouble(self.logloss(y, y_hat))
 
         return loss
-
-
-
-def frange(x, y, jump):
-    while x < y:
-        yield x
-        x += jump
-
 
 
 
@@ -134,9 +132,9 @@ if __name__ == "__main__":
     if verbose > 0:
         min = 1000
         min_learning_rate = 0
-        for i in frange(0, 0.001, 0.0001):
+        for i in frange(0, .0001, .0001):
 
-            loss = sol.test(sol.train(train_data,i,170), test_data)
+            loss = sol.test(sol.train(train_data,i,82), test_data)
             if loss <= min:
                 min = loss
                 min_learning_rate = i
@@ -145,3 +143,4 @@ if __name__ == "__main__":
 
         print "MIN_LOSS: ", min
         print "MIN_LEARNING_RATE: ", min_learning_rate
+
