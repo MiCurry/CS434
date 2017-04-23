@@ -24,7 +24,8 @@ If you have any questions or problems, let us know. Thanks.
 
 # 1. Learning Rates And Stopping Condition
 For learning rates we determined that the optimal learning rate was **.0011**
-which produced a loss of **621.7059**.
+which produced a loss of **621.7059**. We decided the best number of iterations to
+run was 170.
 
 # 2. Training & Testing Accuracy Vs # of iterations
 ![Iteratoin Accuracy](./docs/training_accuracy.png)
