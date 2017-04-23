@@ -28,7 +28,7 @@ which produced a loss of **621.7059**. We decided the best number of iterations 
 run was 170.
 
 # 2. Training & Testing Accuracy Vs # of iterations
-![Iteratoin Accuracy](./docs/training_accuracy.png)
+![Training Rate Accuracy](https://web.engr.oregonstate.edu/~currymi/training_accuracy.png)
 
 Over the majority of iterations the accuracy of our tests increased to almost
 100%. At the start of the iterations we saw a sharp increase with a sharp
@@ -37,7 +37,7 @@ decrease followed by the rapid increase to the max accuracy.
 # 3. L2 Regulation
 The pusdocode for the batch learning with L2 regulation is as follows:
 ```
-given training examples x[0, 1, .. i] and y[0, 1, .. i] 
+given training examples x[0, 1, .. i] and y[0, 1, .. i]
 w = [0, 0, ... 0]
 while(iterations > 0):
     d = zeros(256)
@@ -50,7 +50,7 @@ while(iterations > 0):
 ```
 
 ## 3.a Plot
-![Lambda Accuracy](./docs/lambda_accuracy.png)
+![Lambda Accuracy](https://web.engr.oregonstate.edu/~currymi/lambda_accuracy.png)
 Plotting the percent correctness with the regulation function and values of
 lambda equalling [-10^3, -10^2, .. 10^3] we found that the percent correct
 increased as lambda increased towards zero the percent increased. As it got
