@@ -41,9 +41,9 @@ accuracy over testing data and a **93.9%** over training data.
 
 Decision Tree Stump
 ```
-             Attribute #: 22   
-        Information Gain: 0.4883  
- Percent Error (Testing): 89.7%
+Attribute #: 22   
+Information Gain: 0.4883  
+Percent Error (Testing): 89.7%
 Percent Error (Training): 93.9%
 ```
 
