@@ -124,10 +124,12 @@ class solution():
         right_entropy = calc_entropy(rpos, rneg, rtot)
         total = ltot + rtot
 
-        # Calculate Infromation Gain
-        infromation_gain = tot_entropy - ( (ltot/total) * left_entropy ) + (( rtot/total ) * right_entropy)
 
-        return left_entropy, right_entropy, infromation_gain
+        # Calculate Infromation Gain
+        after_entropy = (ltot/total) * left_entropy + (rtot/total) * right_entropy
+        information_gain = tot_entropy - after_entropy
+
+        return left_entropy, right_entropy, information_gain
 
     """ Determine the best threshold for the attribute """
     def attribute_thres(self, i, attribute):
@@ -152,11 +154,21 @@ class solution():
         """
         left_entropy, right_entropy, information_gain = self.branch_entropies(thresh, attribute, tot_entropy)
 
+        print attribute
+        print "i: ", i
+        print "Left: ", left_entropy,
+        print "Right: ", right_entropy,
+        print "Thresh: ", thresh
+        print "Infromation_gain: ", information_gain
+        print ""
+        #raw_input("Press Enter")
         """ Then Return the attribute, its threshold and the information gain """
         if thresh[0] == 0:
-            return thresh[1], information_gain
+            index = thresh[1]
+            return attribute[index, 0], information_gain
         else:
-            return thresh[0], information_gain
+            index = thresh[0]
+            return attribute[index, 0], information_gain
 
         """ Usefull print function for above the if statement
         print attribute
@@ -165,8 +177,6 @@ class solution():
         print "Right: ", right_entropy,
         print "Thresh: ", thresh
         print "Infromation_gain: ", information_gain
-        print "P: {0}, N: {1}, i: {2}, thr[0]: {3}, thr[i]:{4} ".format(pos, neg, i, thresh[0], thresh[1])
-        print "Total Ent: {0}, Entropy: {1}, IG: {2}".format(tot_entropy, entropy, infromation_gain)
         print ""
         raw_input("Press Enter")
         """
@@ -194,15 +204,22 @@ class solution():
             splits = np.vstack([splits, [i, split, information_gain]])
 
         splits = np.delete(splits, (0), axis=0) # Remove 0, 0, 0 Place Holder
-        stump = array([0, 0, 0]) # [Attribute #, threshold, information gain]
+        print splits
+        thresh = 0
+        attri_num  = 0
+        ig = 0
 
         """ Now that we have all the information gains for each attribute we
         need to find the one that gives us the greatest information gain.
 
         """
+        print splits.shape
         for k in range(splits.shape[0]):
-            if splits[k,2] > stump[0]:
-                stump = splits[k]
+            print attri_num, thresh, ig
+            if splits[k,2] > ig:
+                attri_num = splits[k, 0]
+                thresh = splits[k,1]
+                ig = splits[k, 2]
             else:
                 continue
 
@@ -213,10 +230,31 @@ class solution():
         guess as a negative one. However this might be wrong for one of the
         attributes.
         """
-        return stump # [Attrubte #, Threshold, information Gain]
+
+        return [attri_num, thresh, ig] # [Attrubte #, Threshold, information Gain]
 
     def stump_testTree(self, stump, test_data):
-        pass
+        x = test_data[0]
+        y = test_data[1]
+        # Run through each example, but only look at the attribute we care about
+        att_num = stump[0]
+        att_thresh = stump[1]
+
+        #print "Att_num {0}, att_thresh: {1}".format(att_num, att_thresh)
+        correct = 0
+        for i in range(x.shape[0]):
+            if x[i, att_num] <= att_thresh:
+                guess = -1
+            if x[i, att_num] > att_thresh:
+                guess = 1
+
+            #print guess, y[i], " ",
+            if guess == y[i]:
+                correct += 1
+
+        error = float(correct)/float(i)
+        return error
+
 
 if __name__ == "__main__":
     """ Argument Parser """
