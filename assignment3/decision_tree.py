@@ -24,7 +24,7 @@ def frange(x, y, jump):
 def calc_entropy(pos, neg, tot):
     #print "pos: {0}, neg: {1}, tot: {2}".format(pos, neg, tot)
     if pos == 0 or neg == 0:
-        print "Perfect Split!"
+        #print "Perfect Split!"
         return 0
     return (-(pos/tot) * np.log((pos/tot)) - (neg/tot) * np.log((neg/tot)))
 
@@ -81,6 +81,14 @@ class solution():
         total = totneg + totpos
         return (-(totpos/total) * np.log((totpos/total)) - (totneg/total) * np.log((totneg/total)))
 
+    """ To calculate the entropies for each branch we made we count the number
+    of pos (1) and neg (-1) on one side of our threshold split, find the total
+    number examples in that side of the split (pos + neg) and then Caclulate
+    the entropy. We then do the same for the above
+
+    To calculate the information gain for the split we made we take the
+    entropies and minus that from the total entropy which we caclulated earlier.
+    """
     def branch_entropies(self, thresh, attribute, tot_entropy):
         # Left Entropy
         lneg = 0
@@ -114,60 +122,70 @@ class solution():
         rneg = float(rneg)
         rtot = rpos + rneg
         right_entropy = calc_entropy(rpos, rneg, rtot)
-
         total = ltot + rtot
+
         # Calculate Infromation Gain
         infromation_gain = tot_entropy - ( (ltot/total) * left_entropy ) + (( rtot/total ) * right_entropy)
 
         return left_entropy, right_entropy, infromation_gain
 
+    """ Determine the best threshold for the attribute """
     def attribute_thres(self, i, attribute):
         tot_entropy = self.total_entropy(attribute)
 
-        attribute = attribute[np.argsort(attribute[:,0])] # Sort
+        """ The attribute array contains the values of the x_i (each values
+        of that attribute) and the coorosponding class label based on the
+        training data.
 
-        # Caclulate the threshold for the attribute
-        thresh = maxSubArray(attribute[:, 1])
-
-        # Cacl entropy of the branches
-        left_entropy, right_entropy, information_gain = self.branch_entropies(thresh, attribute, tot_entropy)
+        Sort the data based on the x_i's. Then find a good place to split the
+        data.
+            To do this we used a maxSubArray to find the portion of the data
+            where the most positive numbers congregated!
 
         """
+        attribute = attribute[np.argsort(attribute[:,0])] # Sort
+        thresh = maxSubArray(attribute[:, 1])
+
+        """ Now that we have the threshhold for the data, now we need to
+        calculate the resulting entropies and the information_gain from
+        the split we just made.
+        """
+        left_entropy, right_entropy, information_gain = self.branch_entropies(thresh, attribute, tot_entropy)
+
+        """ Then Return the attribute, its threshold and the information gain """
+        if thresh[0] == 0:
+            return thresh[1], information_gain
+        else:
+            return thresh[0], information_gain
+
+        """ Usefull print function for above the if statement
         print attribute
         print "i: ", i
         print "Left: ", left_entropy,
         print "Right: ", right_entropy,
         print "Thresh: ", thresh
         print "Infromation_gain: ", information_gain
+        print "P: {0}, N: {1}, i: {2}, thr[0]: {3}, thr[i]:{4} ".format(pos, neg, i, thresh[0], thresh[1])
+        print "Total Ent: {0}, Entropy: {1}, IG: {2}".format(tot_entropy, entropy, infromation_gain)
+        print ""
         raw_input("Press Enter")
         """
 
-        # Return this attributes threshold and its infromation_gain
-        if thresh[0] == 0:
-            return thresh[1], information_gain
-        else:
-            return thresh[0], information_gain
+    """ build_stump()
 
-        """
-        if verbose > 0:
-            for j in range(attribute.shape[0]):
-                print j, "- [", attribute[j,0], attribute[j,1], "]"
-        if thresh[0] == 0:
-            print "P: {0}, N: {1}, i: {2}, thr[0]: {3}, thr[i]:{4} ".format(, neg, i, thresh[0], thresh[1])
-            print "Total Ent: {0}, Entropy: {1}, IG: {2}".format(tot_entropy, entropy, infromation_gain)
-            print ""
-        else:
-            print "P: {0}, N: {1}, i: {2}, thr[0]: {3}, thr[i]:{4} ".format(pos, neg, i, thresh[0], thresh[1])
-            print "Total Ent: {0}, Entropy: {1}, IG: {2}".format(tot_entropy, entropy, infromation_gain)
-            print ""
-        """
-
-    def entropy(self, data):
+    """
+    def build_stump(self, data):
         x = array(data[0])
         y = array(data[1])
         attribute = array([])
         splits = array([0,0,0])
+        np.set_printoptions(precision=5, suppress=True)
 
+        """ For each attribute, find the best threshold that seperates that
+        data. Then compute the entropy of each split from that attribute, from
+        which we can calculate information gain from the total entropy.
+
+        """
         for i in range(x.shape[1]):
             attribute = array([])
             attribute = np.column_stack([ x[:,i], y[:,0] ])
@@ -175,25 +193,29 @@ class solution():
             split, information_gain = self.attribute_thres(i, attribute)
             splits = np.vstack([splits, [i, split, information_gain]])
 
-
-        # Find the Attribute that has the biggest information_gain
-        np.set_printoptions(precision=5, suppress=True)
         splits = np.delete(splits, (0), axis=0) # Remove 0, 0, 0 Place Holder
         stump = array([0, 0, 0]) # [Attribute #, threshold, information gain]
 
-        print stump.shape
+        """ Now that we have all the information gains for each attribute we
+        need to find the one that gives us the greatest information gain.
+
+        """
         for k in range(splits.shape[0]):
             if splits[k,2] > stump[0]:
                 stump = splits[k]
             else:
                 continue
 
+        """ Now return that attribute number, the threshold on where we should
+        cut the data and the information gain.
+
+        The threshold is a binary split, anything below the theshold we will
+        guess as a negative one. However this might be wrong for one of the
+        attributes.
+        """
         return stump # [Attrubte #, Threshold, information Gain]
 
-    def stump_buildTree(self, train_data):
-        pass
-
-    def stump_testTree(self, test_data):
+    def stump_testTree(self, stump, test_data):
         pass
 
 if __name__ == "__main__":
