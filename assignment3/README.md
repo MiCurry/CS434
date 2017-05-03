@@ -11,14 +11,18 @@ that trained a binary logistic regression classifier.
 # Running the Code
 The code runs a python 2 so it should be simple to run and requires pip
 to make sure you have the packages we use installed.
+
 1. First install the requirements using pip
-'''
+
+```
 pip install -r requirements
-'''
+```
+
 2. Run our implementation by running the following (pass the -v or --verbose flag to produce verbose output)
-'''
+
+```
 python knn.py -v 1 # This will output the number of training, testing, and Leave-One-Out errors
-'''
+```
 
 If you have any questions or problems, let us know. Thanks.
 
