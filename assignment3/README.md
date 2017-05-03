@@ -55,7 +55,10 @@ above 40 and the accuracies are steadily decreasing from 95%.
 
 # Decision Tree
 
+
 ## Decision Tree Stump
+You can run the decision tree stump by running `python decision_tree.py`.
+
 To find the decision tree stump we found threshold values for each
 attribute (using a max sum array algorithm) and then calculated the information
 gain for splitting on that threshold for that attribute.

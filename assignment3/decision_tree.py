@@ -154,14 +154,6 @@ class solution():
         """
         left_entropy, right_entropy, information_gain = self.branch_entropies(thresh, attribute, tot_entropy)
 
-        print attribute
-        print "i: ", i
-        print "Left: ", left_entropy,
-        print "Right: ", right_entropy,
-        print "Thresh: ", thresh
-        print "Infromation_gain: ", information_gain
-        print ""
-        #raw_input("Press Enter")
         """ Then Return the attribute, its threshold and the information gain """
         if thresh[0] == 0:
             index = thresh[1]
@@ -204,7 +196,6 @@ class solution():
             splits = np.vstack([splits, [i, split, information_gain]])
 
         splits = np.delete(splits, (0), axis=0) # Remove 0, 0, 0 Place Holder
-        print splits
         thresh = 0
         attri_num  = 0
         ig = 0
@@ -213,9 +204,7 @@ class solution():
         need to find the one that gives us the greatest information gain.
 
         """
-        print splits.shape
         for k in range(splits.shape[0]):
-            print attri_num, thresh, ig
             if splits[k,2] > ig:
                 attri_num = splits[k, 0]
                 thresh = splits[k,1]
@@ -267,12 +256,11 @@ if __name__ == "__main__":
         verbose = args.verbose
 
     """ Solution Start """
-    sol = solution(trainData, testData)
+    sol = solution()
     train_data = sol.load_data(trainData)
     test_data = sol.load_data(testData)
 
-    sol.dt_stump_train(self, train_data)
-    print "W: ", w
-
-    #loss = sol.test(w, test_data)
-    #print "Loss: ", loss
+    stump = sol.build_stump(train_data)
+    print "Attribute #: {0}, Threshold {1}, information gain {2}".format(stump[0], stump[1], stump[2])
+    print "Testing Error: ", sol.stump_testTree(stump, test_data)
+    print "Training Error: ", sol.stump_testTree(stump, train_data)
