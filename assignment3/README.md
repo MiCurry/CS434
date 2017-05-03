@@ -40,17 +40,17 @@ contains a summary of this information, including a plot of each of the errors a
 of K.
 
 The results display some interesting behavior. For example, when K=1, the training set
-predictions are no difference than the original set of training y values (no error). 
-This is likely because the knn model was trained with the training input features and 
+predictions are no difference than the original set of training y values (no error).
+This is likely because the knn model was trained with the training input features and
 correct training classifications, meaning all data would map to its original outputs.
-Around K=7, the training and LOOCV errors are slightly rising, however the testing data 
-meets a low of **15** errors anad 94.72% accuracy. As K increased above K=7, each the training, 
+Around K=7, the training and LOOCV errors are slightly rising, however the testing data
+meets a low of **15** errors anad 94.72% accuracy. As K increased above K=7, each the training,
 testing, and LOOCV errors began to rise at a steady pace with minimul declines.
 
-Based on our test data, our choice of K would be K=7, primarily because the testing 
+Based on our test data, our choice of K would be K=7, primarily because the testing
 set experienced the fewest errors when K=7. Additionally, the combined sum of the
 three values of prediction error tests is still only 32 errors out of 284*3 combined tests
-(96.24% accuracy). Nearly all values of K above 7 are have a combined error count 
+(96.24% accuracy). Nearly all values of K above 7 are have a combined error count
 above 40 and the accuracies are steadily decreasing from 95%.
 
 # Decision Tree
@@ -66,7 +66,7 @@ of *115.7* where values below this value were classified as -1 and values above
 were classified as 1. The information gain we got from splitting at this value
 was **0.4883**.
 
-Splitting upon this attribute at the threshold above gave us a **89.7%**
+Splitting upon this attribute at the threshold above gave us a **89.7**
 accuracy over testing data and a **93.9%** over training data.
 
 Decision Tree Stump
@@ -77,5 +77,5 @@ Percent Error (Testing): 89.7%
 Percent Error (Training): 93.9%
 ```
 
-To find the threshold of each attribute we used a max sub array algorithm. From
-that we calculated the entropies of each split and found the information gain.
+## Decision Tree
+Unfortunately we weren't able to complete part two of the decision tree!
