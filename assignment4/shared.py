@@ -12,6 +12,34 @@ def frange(x, y, jump):
         yield x
         x += jump
 
+def load_data(file):
+    print "Loading Data..."
+    f = open(file, 'r')
+    X = []
+    i = 0
+
+    for lines in f:
+        line = lines.rstrip("\n")
+        line = line.split(",")
+        line = [float(x) for x in line]
+        line = array(line)
+        X.append(line[0:line.shape[0]-1])
+
+    return array(X)
+
+def load_mm(file):
+    f = open(file, 'r+b')
+    X = array([])
+    i = 0
+
+    print "Appending line: ",
+    for lines in f:
+        line = lines.rstrip("\n")
+        line = line.split(",")
+        line = array(line)
+        X = np.append(X, line[0:line.shape[0]-1])
+
+    return X
 
 
 def SSE(w, data):
