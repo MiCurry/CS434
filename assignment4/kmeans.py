@@ -10,7 +10,7 @@ from numpy import arange, array, ones, linalg, zeros
 import numpy as np
 import re
 
-from shared import SSE, load_data
+from shared import load_data, unsuper_SSE
 
 dataFile = "./data/data-1.txt"
 smallData = "./data/data-1vs.txt"
@@ -19,62 +19,75 @@ verbose = 0
 def kmeans(data, k, epochs=1):
     # Randomly Pick K Seeds from the dataset
     seeds = []
+    sse = []
+    clusters = []
 
-    """
-    A partition is that cluster label and the index of
-    """
+    """ Generate First Random Seeds """
+    for i in range(k):
+        seeds.append(randint(0, data.shape[0]))
+        seeds[i] = data[seeds[i]]
 
+
+    """ Cluster data """
     while epochs > 0:
         epochs -= 1
-        d = tuple()
-        seeds = []
+        
+        """ Re-create cluster catagories """
         clusters = []
-
         for i in range(k):
-            seeds.append(randint(0, data.shape[0]))
             cluster = []
             clusters.append(cluster)
 
-        print "Seeds: ", seeds
-        print "Empty Clusters: ", clusters
-
+        """ Calculate the distance between each point and our seed
+        and put the data point into the corrosponding cluster """
         for x in range(data.shape[0]):
             dist = []
 
-            for i in seeds:
-                distance = np.linalg.norm(data[x] - data[i])
-                dist.append(np.linalg.norm(data[x] - data[i]))
+            for i in range(len(seeds)):
+                dist.append(np.linalg.norm(data[x] - seeds[i]))
                 c = min(dist)
 
+            clusters[dist.index(c)].append(x)
 
-            cluster = dist.index(c)
-            clusters = np.insert(clusters, clusters[cluster].shape[0], x, axis=1)
-            print "Distances", dist,
-            print " Chosen Distance", c
-            print "Cluster id", cluster
-            print clusters
-            print "After insertion"
-            print clusters
-            raw_input("ENTER")
+        """ Print Numbers """
+        for i in range(k):
+                print "Cluster {0}: {1}".format(i,
+                len(clusters[i])),
+        print ""
 
-        print clusters[0]
-        print clusters[1]
-        raw_input("Please Press Enter!")
+        # Calculate SSE's
+        sse.append(unsuper_SSE(data, clusters, seeds))
 
-    return clusters
+        """ Re-compute cluster centers (seeds) """
+        for i in range(k):
+            seeds[i] = 0
+            for p in range(len(clusters[i])):
+                seeds[i] += data[clusters[i][p]]
+    
+            seeds[i] = seeds[i] / len(clusters[i])
 
+    return sse
 
 if __name__ == "__main__":
     """ Argument Parser """
     parser = argparse.ArgumentParser(description='Homework Solution.')
     parser.add_argument("-v", '--verbose',
                         help='produces verbose output')
+    parser.add_argument("-e", '--epochs',
+                        help='The number of epochs',
+                        type=int,
+                        default=1)
+    parser.add_argument("-k", '--clusters',
+                        help='The number of clusters',
+                        type=int,
+                        default=2)
     args = parser.parse_args()
     if args.verbose > 0:
         verbose = args.verbose
 
+    np.set_printoptions(suppress=True)
+
     """ Solution Start """
     print "Start"
     data = load_data(smallData)
-    clusters = kmeans(data, 2, 1)
-    print clusters.shape
+    print kmeans(data, args.clusters, args.epochs)

@@ -41,8 +41,18 @@ def load_mm(file):
 
     return X
 
+# Unsupervised learning
+def unsuper_SSE(data, clusters, seeds):
+    sse = 0
 
-def SSE(w, data):
+    for c in range(len(clusters)):
+        for i in range(len(clusters[c])):
+            sse += np.linalg.norm(data[clusters[c][i]] - seeds[c])
+
+    return sse
+
+# Supervised Learning
+def super_SSE(w, data):
     X = array(data[0])
     Y = array(data[1])
     w = array(w)
@@ -51,7 +61,7 @@ def SSE(w, data):
     for houses in data[0]:
         estimate = numpy.sum(w[0:w.size].T * X[i][0:X[0].size])
         sse += numpy.subtract(Y[i], estimate)**2
-        if(verbose > 0):
+        if(verbose > 1):
             print "Estimated: {0} Actual: {1}".format(estimate, Y[i])
         i += 1
 
