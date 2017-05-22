@@ -9,6 +9,9 @@ import csv
 from numpy import arange, array, ones, linalg, zeros
 import numpy as np
 import re
+import matplotlib
+matplotlib.use('Agg')
+import pylab as plt
 
 from shared import load_data, unsuper_SSE
 
@@ -31,7 +34,7 @@ def kmeans(data, k, epochs=1):
     """ Cluster data """
     while epochs > 0:
         epochs -= 1
-        
+
         """ Re-create cluster catagories """
         clusters = []
         for i in range(k):
@@ -63,7 +66,7 @@ def kmeans(data, k, epochs=1):
             seeds[i] = 0
             for p in range(len(clusters[i])):
                 seeds[i] += data[clusters[i][p]]
-    
+
             seeds[i] = seeds[i] / len(clusters[i])
 
     return sse
@@ -89,5 +92,17 @@ if __name__ == "__main__":
 
     """ Solution Start """
     print "Start"
-    data = load_data(smallData)
-    print kmeans(data, args.clusters, args.epochs)
+    data = load_data(dataFile)
+    plt.subplot(111)
+    sses = []
+    for i in range(15):
+        sse = []
+        sse = kmeans(data, i+1, 10)
+        points = arange(len(sse))
+        plt.title("SSE vs Number of Epochs")
+        plt.xlabel("Number of Iterations")
+        plt.ylabel("SSE")
+        plt.plot(points, sse, label=str(i))
+
+    plt.legend(loc=1, borderaxespad=0.)
+    plt.savefig("./docs/sse.png")
