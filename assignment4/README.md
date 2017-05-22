@@ -31,7 +31,7 @@ Here is our plot of our SSE values vs the number of iterations.
 Here is our plot of the SSE values vs the number of iterations at different
 values of k. The lowest SSE value we recorded was: ``8652667``.
 
-Based on our graph we would choose ``k = 8`` or ``k = 9`` as they seemed to have
+Based on our graph we would choose ``k = 8, 9, 10`` as they seemed to have
 the lowest SSE 'elbow.'
 
 # Hierarchical Agglomerative Clustering (HAC)
