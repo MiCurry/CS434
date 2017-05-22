@@ -102,7 +102,7 @@ if __name__ == "__main__":
 
     plt.subplot(111)
     sses = []
-    for i in range(1, 10):
+    for i in range(1, 11):
         sse = []
         sse = kmeans(data, i+1, 10)
         sses.append(min(sse))
