@@ -19,7 +19,17 @@ python logRegress.py -v 2 # This will determine the learning rate!
 
 If you have any questions or problems, let us know. Thanks.
 
-# 1. SSE K = 2 Vs Iterations
+# Non-Hierarchical Clustering
 
+## 1. SSE K = 2 Vs Iterations
 
-# 2. SSE k = 2-10 Vs 10 Iterations
+Here is our plot of our SSE values vs the number of iterations.
+![k = 2 SSE](./docs/sse-k2.png)
+
+## 2. SSE k = 2-10 Vs 10 Iterations
+Here is our plot of the SSE values vs the number of iterations at different
+values of k. The lowest SSE value we recorded was: ``8652667``.
+![k = 2-10 SSE](./docs/sse.png)
+
+# Hierarchical Agglomerative Clustering (HAC)
+

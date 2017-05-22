@@ -14,6 +14,7 @@ matplotlib.use('Agg')
 import pylab as plt
 
 from shared import load_data, unsuper_SSE
+from profiler import plot_sse
 
 dataFile = "./data/data-1.txt"
 smallData = "./data/data-1vs.txt"
@@ -58,8 +59,6 @@ def kmeans(data, k, epochs=1):
                 len(clusters[i])),
         print ""
 
-        # Calculate SSE's
-        sse.append(unsuper_SSE(data, clusters, seeds))
 
         """ Re-compute cluster centers (seeds) """
         for i in range(k):
@@ -68,6 +67,9 @@ def kmeans(data, k, epochs=1):
                 seeds[i] += data[clusters[i][p]]
 
             seeds[i] = seeds[i] / len(clusters[i])
+
+        # Calculate SSE's
+        sse.append(unsuper_SSE(data, clusters, seeds))
 
     return sse
 
@@ -93,11 +95,17 @@ if __name__ == "__main__":
     """ Solution Start """
     print "Start"
     data = load_data(dataFile)
+    
+    sse = kmeans(data, 2, 10)
+    print sse
+    plot_sse(sse, 2)
+
     plt.subplot(111)
     sses = []
-    for i in range(15):
+    for i in range(1, 10):
         sse = []
         sse = kmeans(data, i+1, 10)
+        sses.append(min(sse))
         points = arange(len(sse))
         plt.title("SSE vs Number of Epochs")
         plt.xlabel("Number of Iterations")
@@ -106,3 +114,5 @@ if __name__ == "__main__":
 
     plt.legend(loc=1, borderaxespad=0.)
     plt.savefig("./docs/sse.png")
+    print sses
+    print min(sses)

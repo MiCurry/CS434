@@ -25,4 +25,4 @@ def plot_sse(sse, k):
         plt.ylabel("SSE")
 
         plt.plot(points, sse, "b")
-        plt.savefig("./docs/sse-e"+str(len(points))+"-k"+str(k)+".png")
+        plt.savefig("./docs/sse-k2.png")
