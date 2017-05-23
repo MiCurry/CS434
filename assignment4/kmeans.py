@@ -108,49 +108,40 @@ def hac(data):
     for i in range(data.shape[0]):
         clusters.append([i]) # Each data is its own cluster
 
-    print len(clusters)
-    print len(clusters[0])
-
     # Calculate the distances between each cluster
     for i in range(len(clusters)):
         for j in range(i+1, len(clusters)):
             distances[i][j] = np.linalg.norm(data[i] - data[j])
 
-    while(distances.shape[1] > 2):
+    while(distances.shape[1] > 1):
         min_dist = np.inf
         cj = 0
         ci = 0
 
         # Find the cluster with the minimum distance
         ci, cj = np.unravel_index(distances.argmin(), distances.shape)
-        print ci, cj, distances.shape
+        distance = np.min(distances)
+        distances[ci,cj] = np.inf
 
         new_d = distances
-        new_d = np.delete(new_d, ci, axis=0)
-        new_d = np.delete(new_d, cj, axis=1)
+        new_d = np.delete(new_d, [ci, cj], axis=0)
+        new_d = np.delete(new_d, [ci, cj], axis=1)
 
         # Add in c_ij
         c_ij = np.zeros(new_d.shape[1])
         new_d = np.vstack([new_d, c_ij])
-
+        
         # Recompute the distance for c_ij to each other cluster
         for i in range(new_d.shape[1]):
             new_d[-1][i] = min(distances[ci][i], distances[cj][i])
 
         distances = new_d
         if(distances.shape[1] < 12):
-            print distances
-            raw_input("Enter")
+            print "Merged cluster: {0} with cluster: {1} at height {2} with\
+            distance: {3}".format(ci, cj,\
+            distances.shape[1], distance)
 
     return 1
-
-    """
-    while len(clusters) != 10:
-        # Calculate or lookup Data Distance between each Cluster
-        for i in range(len(clusters)):
-            for j in range(len(clusters))
-    """
-
 
 if __name__ == "__main__":
     """ Argument Parser """
