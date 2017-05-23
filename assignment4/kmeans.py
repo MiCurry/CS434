@@ -12,6 +12,7 @@ import re
 import matplotlib
 matplotlib.use('Agg')
 import pylab as plt
+from scipy.cluster import hierarchy
 
 from shared import load_data, unsuper_SSE
 from profiler import plot_sse
@@ -113,6 +114,8 @@ def hac(data):
         for j in range(i+1, len(clusters)):
             distances[i][j] = np.linalg.norm(data[i] - data[j])
 
+    heights = []
+
     while(distances.shape[1] > 1):
         min_dist = np.inf
         cj = 0
@@ -136,19 +139,19 @@ def hac(data):
             new_d[-1][i] = min(distances[ci][i], distances[cj][i])
 
         distances = new_d
-        if(distances.shape[1] < 12):
+        if(distances.shape[1] < 11):
+            heights.append(distance)
             print "Merged cluster: {0} with cluster: {1} at height {2} with\
             distance: {3}".format(ci, cj,\
             distances.shape[1], distance)
 
-    return 1
+    return heights
 
 def hac_max(data):
     distances = zeros((data.shape[0], data.shape[0]))
     distances.fill(-1)
 
     clusters = []
-    cluster_min = []
 
     for i in range(data.shape[0]):
         clusters.append([i]) # Each data is its own cluster
@@ -157,6 +160,8 @@ def hac_max(data):
     for i in range(len(clusters)):
         for j in range(i+1, len(clusters)):
             distances[i][j] = np.linalg.norm(data[i] - data[j])
+
+    heights = []
 
     while(distances.shape[1] > 1):
         cj = 0
@@ -181,11 +186,32 @@ def hac_max(data):
 
         distances = new_d
         if(distances.shape[1] < 12):
+            heights.append(distance)
             print "Merged cluster: {0} with cluster: {1} at height {2} with\
             distance: {3}".format(ci, cj,\
             distances.shape[1], distance)
 
-    return 1
+    return heights
+    
+""""
+#print sse
+#plot_sse(sse, 2)
+plt.subplot(111)
+sses = []
+for i in range(11):
+sse = []
+sse = kmeans(data, i+1, 10)
+sses.append(min(sse))
+points = arange(len(sse))
+plt.title("SSE vs Number of Epochs")
+plt.xlabel("Number of Iterations")
+plt.ylabel("SSE")
+plt.plot(points, sse, label=str(i+2))
+
+plt.legend(loc=1, borderaxespad=0.)
+plt.savefig("./docs/sse.png") print sses
+print min(sses)
+"""
 
 if __name__ == "__main__":
     """ Argument Parser """
@@ -209,27 +235,26 @@ if __name__ == "__main__":
     """ Solution Start """
     print "Start"
     data = load_data(vsData)
-    #kmeans(data,)
-    hac(data)
-    print "Hac Max"
-    hac_max(data)
+    kmeans(data)
 
-    """
-    #print sse
-    #plot_sse(sse, 2)
-    plt.subplot(111)
-    sses = []
-    for i in range(11):
-        sse = []
-        sse = kmeans(data, i+1, 10)
-        sses.append(min(sse))
-        points = arange(len(sse))
-        plt.title("SSE vs Number of Epochs")
-        plt.xlabel("Number of Iterations")
-        plt.ylabel("SSE")
-        plt.plot(points, sse, label=str(i+2))
+    print "Hac min"
+    heights_min = hac(data)
+    print heights_min
+    heights_max = hac_max(data)
+    print heights_max
 
-    plt.legend(loc=1, borderaxespad=0.)
-    plt.savefig("./docs/sse.png") print sses
-    print min(sses)
-    """
+    plt.figure()
+    h_min = hierarchy.linkage(heights_min, 'single')
+    hierarchy.dendrogram(h_min)
+    plt.savefig("./docs/single_hac.png")
+
+    plt.clf()
+
+    h_max = hierarchy.linkage(heights_max, 'single')
+    hierarchy.dendrogram(h_max)
+    plt.savefig("./docs/complete_hac.png")
+    print "done"
+
+
+    
+

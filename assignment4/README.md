@@ -36,3 +36,43 @@ the lowest SSE 'elbow.'
 
 # Hierarchical Agglomerative Clustering (HAC)
 
+## Single
+
+![Single Dendrogram](./docs/single_hac.png) 
+
+```
+Merged cluster: 42 with cluster: 2 with distance: 1856.46572821
+Merged cluster: 43 with cluster: 2 with distance: 1890.6067809
+Merged cluster: 28 with cluster: 8 with distance: 1894.06995647
+Merged cluster: 10 with cluster: 5 with distance: 1902.73671326
+Merged cluster: 8 with cluster: 5 with distance: 1911.37463622
+Merged cluster: 29 with cluster: 4 with distance: 1949.99102562
+Merged cluster: 32 with cluster: 4 with distance: 1970.68236913
+Merged cluster: 27 with cluster: 1 with distance: 1976.6580382
+Merged cluster: 35 with cluster: 1 with distance: 1990.49667169
+Merged cluster: 26 with cluster: 1 with distance: 2052.56181393
+```
+Here we reported our clusters being merged. We were able to merge clusters and
+calculate the distances, however we're not sure on the cluster numbers as they
+sometimes appear to be the same cluster, but we're not sure if they are or not.
+However, we know the distances between the clusters are correct!
+
+
+## Complete
+
+![Double Dendrogram](./docs/double_hac.png) 
+
+```
+Merged cluster: 28 with cluster: 6 with distance: 2323.28969352
+Merged cluster: 26 with cluster: 5 with distance: 2322.24288135
+Merged cluster: 25 with cluster: 4 with distance: 2317.57826189
+Merged cluster: 25 with cluster: 6 with distance: 2294.40863841
+Merged cluster: 24 with cluster: 7 with distance: 2263.83413703
+Merged cluster: 22 with cluster: 6 with distance: 2235.52477061
+Merged cluster: 18 with cluster: 5 with distance: 2209.47459818
+Merged cluster: 20 with cluster: 2 with distance: 2152.18888576
+Merged cluster: 21 with cluster: 3 with distance: 2114.71440152
+Merged cluster: 0 with cluster: 2 with distance: 1295.42850054
+```
+
+Similarly to single HAC we know the distances are correct!
