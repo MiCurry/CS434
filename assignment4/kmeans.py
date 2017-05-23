@@ -143,6 +143,50 @@ def hac(data):
 
     return 1
 
+def hac_max(data):
+    distances = zeros((data.shape[0], data.shape[0]))
+    distances.fill(-1)
+
+    clusters = []
+    cluster_min = []
+
+    for i in range(data.shape[0]):
+        clusters.append([i]) # Each data is its own cluster
+
+    # Calculate the distances between each cluster
+    for i in range(len(clusters)):
+        for j in range(i+1, len(clusters)):
+            distances[i][j] = np.linalg.norm(data[i] - data[j])
+
+    while(distances.shape[1] > 1):
+        cj = 0
+        ci = 0
+
+        # Find the cluster with the minimum distance
+        ci, cj = np.unravel_index(distances.argmax(), distances.shape)
+        distance = np.max(distances)
+        distances[ci,cj] = -1
+
+        new_d = distances
+        new_d = np.delete(new_d, [ci, cj], axis=0)
+        new_d = np.delete(new_d, [ci, cj], axis=1)
+
+        # Add in c_ij
+        c_ij = np.zeros(new_d.shape[1])
+        new_d = np.vstack([new_d, c_ij])
+        
+        # Recompute the distance for c_ij to each other cluster
+        for i in range(new_d.shape[1]):
+            new_d[-1][i] = max(distances[ci][i], distances[cj][i])
+
+        distances = new_d
+        if(distances.shape[1] < 12):
+            print "Merged cluster: {0} with cluster: {1} at height {2} with\
+            distance: {3}".format(ci, cj,\
+            distances.shape[1], distance)
+
+    return 1
+
 if __name__ == "__main__":
     """ Argument Parser """
     parser = argparse.ArgumentParser(description='Homework Solution.')
@@ -167,6 +211,8 @@ if __name__ == "__main__":
     data = load_data(vsData)
     #kmeans(data,)
     hac(data)
+    print "Hac Max"
+    hac_max(data)
 
     """
     #print sse
