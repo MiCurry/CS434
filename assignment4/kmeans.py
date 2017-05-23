@@ -18,9 +18,10 @@ from profiler import plot_sse
 
 dataFile = "./data/data-1.txt"
 smallData = "./data/data-1vs.txt"
+vsData = "./data/data-2.txt"
 verbose = 0
 
-def kmeans(data, k, epochs=1):
+def kmeans(data, k=2, epochs=10):
     # Randomly Pick K Seeds from the dataset
     seeds = []
     sse = []
@@ -115,30 +116,34 @@ def hac(data):
         for j in range(i+1, len(clusters)):
             distances[i][j] = np.linalg.norm(data[i] - data[j])
 
-    while(clusters != 10):
+    while(distances.shape[1] > 0):
         min_dist = np.inf
         cj = 0
         ci = 0
 
-        # Find the cluster with the minimum distance 
+        # Find the cluster with the minimum distance
         ci, cj = np.unravel_index(distances.argmin(), distances.shape)
-        print ci, cj
-                    
-        # Merge ci and cj
-        ## Create the new Cluster
-        clusters.append(clusters[ci] + clusters[cj])
-        distances[ci][cj] = np.inf
+        print ci, cj, distances.shape
 
-        del clusters[ci]; del clusters[cj]
+        new_d = distances
+        new_d = np.delete(new_d, ci, axis=0)
+        new_d = np.delete(new_d, cj, axis=1)
 
-        print ci, cj, len(clusters), distances.shape
-    
+        # Add in c_ij
+        c_ij = np.zeros(new_d.shape[1])
+        new_d = np.vstack([new_d, c_ij])
+
+        # Recompute the distance for c_ij to each other cluster
+        for i in range(new_d.shape[1]):
+            new_d[-1][i] = min(distances[ci][i], distances[cj][i])
+
+        distances = new_d
 
     return 1
 
     """
     while len(clusters) != 10:
-        # Calculate or lookup Data Distance between each Cluster 
+        # Calculate or lookup Data Distance between each Cluster
         for i in range(len(clusters)):
             for j in range(len(clusters))
     """
@@ -165,17 +170,16 @@ if __name__ == "__main__":
 
     """ Solution Start """
     print "Start"
-    data = load_data(smallData)
+    data = load_data(vsData)
+    #kmeans(data,)
     hac(data)
-    
 
     """
-    sse = kmeans(data, 2, 10)
-    print sse
-    plot_sse(sse, 2)
+    #print sse
+    #plot_sse(sse, 2)
     plt.subplot(111)
     sses = []
-    for i in range(1, 11):
+    for i in range(11):
         sse = []
         sse = kmeans(data, i+1, 10)
         sses.append(min(sse))
@@ -183,10 +187,9 @@ if __name__ == "__main__":
         plt.title("SSE vs Number of Epochs")
         plt.xlabel("Number of Iterations")
         plt.ylabel("SSE")
-        plt.plot(points, sse, label=str(i))
+        plt.plot(points, sse, label=str(i+2))
 
     plt.legend(loc=1, borderaxespad=0.)
-    plt.savefig("./docs/sse.png")
-    print sses
+    plt.savefig("./docs/sse.png") print sses
     print min(sses)
     """
