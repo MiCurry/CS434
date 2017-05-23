@@ -116,7 +116,7 @@ def hac(data):
         for j in range(i+1, len(clusters)):
             distances[i][j] = np.linalg.norm(data[i] - data[j])
 
-    while(distances.shape[1] > 0):
+    while(distances.shape[1] > 2):
         min_dist = np.inf
         cj = 0
         ci = 0
@@ -138,6 +138,9 @@ def hac(data):
             new_d[-1][i] = min(distances[ci][i], distances[cj][i])
 
         distances = new_d
+        if(distances.shape[1] < 12):
+            print distances
+            raw_input("Enter")
 
     return 1
 
