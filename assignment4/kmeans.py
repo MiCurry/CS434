@@ -12,15 +12,17 @@ import re
 import matplotlib
 matplotlib.use('Agg')
 import pylab as plt
+from scipy.cluster import hierarchy
 
 from shared import load_data, unsuper_SSE
 from profiler import plot_sse
 
 dataFile = "./data/data-1.txt"
 smallData = "./data/data-1vs.txt"
+vsData = "./data/data-2.txt"
 verbose = 0
 
-def kmeans(data, k, epochs=1):
+def kmeans(data, k=2, epochs=10):
     # Randomly Pick K Seeds from the dataset
     seeds = []
     sse = []
@@ -107,42 +109,109 @@ def hac(data):
     for i in range(data.shape[0]):
         clusters.append([i]) # Each data is its own cluster
 
-    print len(clusters)
-    print len(clusters[0])
+    # Calculate the distances between each cluster
+    for i in range(len(clusters)):
+        for j in range(i+1, len(clusters)):
+            distances[i][j] = np.linalg.norm(data[i] - data[j])
+
+    heights = []
+
+    while(distances.shape[1] > 1):
+        min_dist = np.inf
+        cj = 0
+        ci = 0
+
+        # Find the cluster with the minimum distance
+        ci, cj = np.unravel_index(distances.argmin(), distances.shape)
+        distance = np.min(distances)
+        distances[ci,cj] = np.inf
+
+        new_d = distances
+        new_d = np.delete(new_d, [ci, cj], axis=0)
+        new_d = np.delete(new_d, [ci, cj], axis=1)
+
+        # Add in c_ij
+        c_ij = np.zeros(new_d.shape[1])
+        new_d = np.vstack([new_d, c_ij])
+        
+        # Recompute the distance for c_ij to each other cluster
+        for i in range(new_d.shape[1]):
+            new_d[-1][i] = min(distances[ci][i], distances[cj][i])
+
+        distances = new_d
+        if(distances.shape[1] < 11):
+            heights.append(distance)
+            print "Merged cluster: {0} with cluster: {1} at height {2} with\
+            distance: {3}".format(ci, cj,\
+            distances.shape[1], distance)
+
+    return heights
+
+def hac_max(data):
+    distances = zeros((data.shape[0], data.shape[0]))
+    distances.fill(-1)
+
+    clusters = []
+
+    for i in range(data.shape[0]):
+        clusters.append([i]) # Each data is its own cluster
 
     # Calculate the distances between each cluster
     for i in range(len(clusters)):
         for j in range(i+1, len(clusters)):
             distances[i][j] = np.linalg.norm(data[i] - data[j])
 
-    while(clusters != 10):
-        min_dist = np.inf
+    heights = []
+
+    while(distances.shape[1] > 1):
         cj = 0
         ci = 0
 
-        # Find the cluster with the minimum distance 
-        ci, cj = np.unravel_index(distances.argmin(), distances.shape)
-        print ci, cj
-                    
-        # Merge ci and cj
-        ## Create the new Cluster
-        clusters.append(clusters[ci] + clusters[cj])
-        distances[ci][cj] = np.inf
+        # Find the cluster with the minimum distance
+        ci, cj = np.unravel_index(distances.argmax(), distances.shape)
+        distance = np.max(distances)
+        distances[ci,cj] = -1
 
-        del clusters[ci]; del clusters[cj]
+        new_d = distances
+        new_d = np.delete(new_d, [ci, cj], axis=0)
+        new_d = np.delete(new_d, [ci, cj], axis=1)
 
-        print ci, cj, len(clusters), distances.shape
+        # Add in c_ij
+        c_ij = np.zeros(new_d.shape[1])
+        new_d = np.vstack([new_d, c_ij])
+        
+        # Recompute the distance for c_ij to each other cluster
+        for i in range(new_d.shape[1]):
+            new_d[-1][i] = max(distances[ci][i], distances[cj][i])
+
+        distances = new_d
+        if(distances.shape[1] < 12):
+            heights.append(distance)
+            print "Merged cluster: {0} with cluster: {1} at height {2} with\
+            distance: {3}".format(ci, cj,\
+            distances.shape[1], distance)
+
+    return heights
     
+""""
+#print sse
+#plot_sse(sse, 2)
+plt.subplot(111)
+sses = []
+for i in range(11):
+sse = []
+sse = kmeans(data, i+1, 10)
+sses.append(min(sse))
+points = arange(len(sse))
+plt.title("SSE vs Number of Epochs")
+plt.xlabel("Number of Iterations")
+plt.ylabel("SSE")
+plt.plot(points, sse, label=str(i+2))
 
-    return 1
-
-    """
-    while len(clusters) != 10:
-        # Calculate or lookup Data Distance between each Cluster 
-        for i in range(len(clusters)):
-            for j in range(len(clusters))
-    """
-
+plt.legend(loc=1, borderaxespad=0.)
+plt.savefig("./docs/sse.png") print sses
+print min(sses)
+"""
 
 if __name__ == "__main__":
     """ Argument Parser """
@@ -165,28 +234,27 @@ if __name__ == "__main__":
 
     """ Solution Start """
     print "Start"
-    data = load_data(smallData)
-    hac(data)
+    data = load_data(vsData)
+    kmeans(data)
+
+    print "Hac min"
+    heights_min = hac(data)
+    print heights_min
+    heights_max = hac_max(data)
+    print heights_max
+
+    plt.figure()
+    h_min = hierarchy.linkage(heights_min, 'single')
+    hierarchy.dendrogram(h_min)
+    plt.savefig("./docs/single_hac.png")
+
+    plt.clf()
+
+    h_max = hierarchy.linkage(heights_max, 'single')
+    hierarchy.dendrogram(h_max)
+    plt.savefig("./docs/complete_hac.png")
+    print "done"
+
+
     
 
-    """
-    sse = kmeans(data, 2, 10)
-    print sse
-    plot_sse(sse, 2)
-    plt.subplot(111)
-    sses = []
-    for i in range(1, 11):
-        sse = []
-        sse = kmeans(data, i+1, 10)
-        sses.append(min(sse))
-        points = arange(len(sse))
-        plt.title("SSE vs Number of Epochs")
-        plt.xlabel("Number of Iterations")
-        plt.ylabel("SSE")
-        plt.plot(points, sse, label=str(i))
-
-    plt.legend(loc=1, borderaxespad=0.)
-    plt.savefig("./docs/sse.png")
-    print sses
-    print min(sses)
-    """
