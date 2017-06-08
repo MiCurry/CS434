@@ -6,11 +6,15 @@ import csv
 
 import numpy as np
 from numpy import array
+import nltk
 
 def frange(x, y, jump):
     while x < y:
         yield x
         x += jump
+
+def tokenize(question):
+    return nltk.pos_tag(nltk.word_tokenize(question))
 
 def load_data(file):
     print "Loading Data..."
@@ -23,26 +27,18 @@ def load_data(file):
         line[0] = int(line[0])
         line[1] = int(line[1])
         line[2] = int(line[2])
+        print line[3]
+        print line[4]
+
+        # Try except here
+        line[3] = tokenize(line[3])
+        # Try except here
+        line[4] = tokenize(line[4])
+
         line[5] = int(line[5])
         X.append(line)
 
-
-
     return array(X)
-
-def load_mm(file):
-    f = open(file, 'r+b')
-    X = array([])
-    i = 0
-
-    print "Appending line: ",
-    for lines in f:
-        line = lines.rstrip("\n")
-        line = line.split(",")
-        line = array(line)
-        X = np.append(X, line[0:line.shape[0]-1])
-
-    return X
 
 # Unsupervised learning
 def unsuper_SSE(data, clusters, seeds):
