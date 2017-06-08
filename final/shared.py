@@ -6,6 +6,7 @@ import csv
 
 import numpy as np
 from numpy import array
+
 import nltk
 
 def frange(x, y, jump):
@@ -39,6 +40,7 @@ def load_data(file):
         X.append(line)
 
     return array(X)
+
 
 # Unsupervised learning
 def unsuper_SSE(data, clusters, seeds):
