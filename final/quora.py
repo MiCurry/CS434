@@ -38,6 +38,5 @@ if __name__ == "__main__":
     """ Solution Start """
     train_data = load_train(trainFile, args.NumData)
     print len(train_data)
-    print train_data[0]
     #test_data = load_test(testFile)
     #print len(train_data)
