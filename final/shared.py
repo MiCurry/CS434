@@ -7,18 +7,31 @@ import csv
 import numpy as np
 from numpy import array
 
+# Natural Language Processing
 import nltk
+from gensim import corpora
+
 
 def frange(x, y, jump):
     while x < y:
         yield x
         x += jump
 
+def fileSize(file):
+    f = open(file, 'r')
+    i = 0
+
+    for line in f:
+        i += 1
+
+    return i
+
 def tokenize(question):
     return nltk.pos_tag(nltk.word_tokenize(question))
 
-def load_train(file):
-    print "Loading Data..."
+    
+def load_train(file, stop):
+    print "Loading {0} question pairs of {1}...".format(stop, fileSize(file))
     f = open(file, 'r')
     X = []
     failures = 0
@@ -26,7 +39,9 @@ def load_train(file):
 
     f = csv.reader(f)
     for line in f:
-        i += 1
+        if(i >= stop):
+            break;
+
         line[0] = int(line[0])
         line[1] = int(line[1])
         line[2] = int(line[2])
@@ -44,6 +59,7 @@ def load_train(file):
 
         line[5] = int(line[5])
         X.append(line)
+        i += 1
 
     print "Number of entries removed {0} of {1}".format(failures, i)
     return X
