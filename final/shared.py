@@ -17,29 +17,66 @@ def frange(x, y, jump):
 def tokenize(question):
     return nltk.pos_tag(nltk.word_tokenize(question))
 
-def load_data(file):
+def load_train(file):
     print "Loading Data..."
     f = open(file, 'r')
     X = []
+    failures = 0
     i = 0
 
     f = csv.reader(f)
     for line in f:
+        i += 1
         line[0] = int(line[0])
         line[1] = int(line[1])
         line[2] = int(line[2])
-        print line[3]
-        print line[4]
 
-        # Try except here
-        line[3] = tokenize(line[3])
-        # Try except here
-        line[4] = tokenize(line[4])
+        try:
+            line[3] = tokenize(line[3])
+        except UnicodeDecodeError as e:
+            failures += 1
+            continue
+        try:
+            line[4] = tokenize(line[4])
+        except UnicodeDecodeError as e:
+            failures += 1
+            continue
 
         line[5] = int(line[5])
         X.append(line)
 
-    return array(X)
+    print "Number of entries removed {0} of {1}".format(failures, i)
+    return X
+
+def load_test(file):
+    print "Loading Data..."
+    f = open(file, 'r')
+    X = []
+    failures = 0
+    i = 0
+
+    f = csv.reader(f)
+    for line in f:
+        i += 1
+        line[0] = int(line[0])
+        line[1] = int(line[1])
+        line[2] = int(line[2])
+
+        try:
+            line[3] = tokenize(line[3])
+        except UnicodeDecodeError as e:
+            failures += 1
+            continue
+        try:
+            line[4] = tokenize(line[4])
+        except UnicodeDecodeError as e:
+            failures += 1
+            continue
+
+        X.append(line)
+
+    print "Number of entries removed {0} of {1}".format(failures, i)
+    return X
 
 
 # Unsupervised learning

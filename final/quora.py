@@ -12,7 +12,7 @@ import matplotlib
 matplotlib.use('Agg')
 import pylab as plt
 
-from shared import load_data
+from shared import load_train, load_test
 
 verbose = 0
 
@@ -32,8 +32,7 @@ if __name__ == "__main__":
     np.set_printoptions(suppress=True)
 
     """ Solution Start """
-    train_data = load_data(trainFile)
-    #test_data = load_data(testFile)
+    train_data = load_train(trainFile)
     print len(train_data)
-    test_data = load_data(testFile)
-    print train_data
+    #test_data = load_test(testFile)
+    #print len(train_data)
