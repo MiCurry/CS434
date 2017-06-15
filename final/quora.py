@@ -14,6 +14,8 @@ import pylab as plt
 
 from shared import load_train, load_test, fileSize
 
+from nn import nn
+
 verbose = 0
 
 trainFile = "./data/quora-train.csv"
@@ -37,6 +39,6 @@ if __name__ == "__main__":
 
     """ Solution Start """
     train_data = load_train(trainFile, args.NumData)
-    print len(train_data)
-    #test_data = load_test(testFile)
-    #print len(train_data)
+    nn(train_data[:args.NumData]) 
+
+    #test_data = load_test(testFile, args.NumData)
