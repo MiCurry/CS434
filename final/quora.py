@@ -12,7 +12,9 @@ import matplotlib
 matplotlib.use('Agg')
 import pylab as plt
 
-from shared import load_data
+from shared import load_train, load_test, fileSize
+
+from nn import nn
 
 verbose = 0
 
@@ -25,6 +27,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Homework Solution.')
     parser.add_argument("-v", '--verbose',
                         help='produces verbose output')
+    parser.add_argument("-n", '--NumData',
+                        help='Number of data points to use for input',
+                        type=int,
+                        default = fileSize(trainFile))
     args = parser.parse_args()
     if args.verbose > 0:
         verbose = args.verbose
@@ -32,6 +38,7 @@ if __name__ == "__main__":
     np.set_printoptions(suppress=True)
 
     """ Solution Start """
-    train_data = load_data(trainFile)
-    test_data = load_data(testFile)
-    print train_data
+    train_data = load_train(trainFile, args.NumData)
+    nn(train_data[:args.NumData]) 
+
+    #test_data = load_test(testFile, args.NumData)
